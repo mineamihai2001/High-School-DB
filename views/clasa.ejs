@@ -55,35 +55,50 @@
               </th>
             </tr>
             <tr class="row">
-              <th class="col-3 text-center" scope="col">NR_MATRICOL</th>
+              <th class="col-1"></th>
+              <th class="col-2 text-center" scope="col">NR_MATRICOL</th>
               <th class="col-3" scope="col">Nume</th>
               <th class="col-3" scope="col">Prenume</th>
               <th class="col-2" scope="col">Media</th>
               <th class="col-1"></th>
             </tr>
           </thead>
-
           <tbody>
             <% for (var i in arr){ %>
             <tr class="row">
-              <th scope="row" class="text-white col-3 text-center">
+              <td class="col-1 text-center">
+                <input
+                  type="hidden"
+                  name="sterge_id"
+                  value="<%= arr[i].id_elev %> "
+                />
+                <a href="remove/<%= arr[i].id_elev %>/<%= arr[i].clasa %> "
+                  ><i class="fas fa-times text-danger"></i
+                ></a>
+              </td>
+              <th scope="row" class="text-white col-2 text-center">
                 <%= arr[i].id_elev; %>
               </th>
               <td class="text-white col-3"><%= arr[i].nume; %></td>
               <td class="text-white col-3"><%= arr[i].prenume; %></td>
               <td class="col-2"></td>
               <td class="col-1 text-center">
-                <a href="detaliielev/<%= arr[i].id_elev %> "
-                  ><i class="fas fa-info text-white"></i
+                <a href="detaliielev/<%= String(arr[i].id_elev) %> "
+                  ><i class="fas fa-info-circle text-white"></i
                 ></a>
               </td>
             </tr>
 
             <% ++i; %> <% } %>
             <tr class="row">
-              <th class="col-3 text-center pt-3">#</th>
+              <th class="col-1"></th>
+              <th class="col-2 text-center pt-3">#</th>
               <td class="col-3">
-                <input type="hidden" name="clasa" value="<%= arr[0].clasa %> ">
+                <input
+                  type="hidden"
+                  name="clasa"
+                  value="<%= arr[0].clasa %> "
+                />
                 <input
                   class="form-control"
                   type="text"
@@ -100,7 +115,7 @@
                 />
               </td>
               <td class="col-2"></td>
-              <td class="col-1">
+              <td class="col-1 text-center">
                 <button type="submit" class="btn btn-secondary">
                   <a href=""><i class="fas fa-user-plus text-white"></i></a>
                 </button>

@@ -195,13 +195,27 @@ insereazaElevi();
 insereazaProfesori();
 randomElevi();
 
-
 function insereazaElev(clasa, nume, prenume) {
-    let sql = `INSERT INTO elevi (nume, prenume, clasa) VALUES ("${nume}", "${prenume}", "${clasa}")`;
+  let sql = `INSERT INTO elevi (nume, prenume, clasa) VALUES ("${nume}", "${prenume}", "${clasa}")`;
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    console.log("Elev inserat");
+  });
+}
+
+function insereazaNote(id_elev, materia, valoare) {
+  console.log("Materia: " + materia);
+  let sql_id = `SELECT * FROM cursuri WHERE titlu_curs="${materia}"`;
+  db.query(sql_id, (err, result2) => {
+    if (err) throw err;
+    console.log("Id gasit: " + result2[0].id_curs);
+    let sql = `INSERT INTO note (id_elev, id_curs, valoare) VALUES ("${id_elev}", "${result2[0].id_curs}", "${valoare}")`;
     db.query(sql, (err, result) => {
       if (err) throw err;
       console.log(result);
-      console.log("Elev inserat");
+      console.log("Nota inserata");
+    });
   });
 }
 
@@ -236,30 +250,47 @@ function fetchClasa(response, clasa) {
 }
 
 function fetchNote(response, id) {
-  let sql = `SELECT * FROM note n JOIN elevi e ON e.id_elev=n.id_elev JOIN cursuri c ON c.id_curs=n.id_curs WHERE n.id_elev=${id}`;
+  let sql = `SELECT * FROM note n JOIN cursuri c ON c.id_curs=n.id_curs JOIN elevi e on e.id_elev=n.id_elev WHERE n.id_elev=${id} ORDER BY c.titlu_curs ASC`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
+    if (Object.keys(result).length == 0) {
+      result = [
+        {
+          id_elev: "#",
+          nume: "",
+          prenume: "",
+        },
+      ];
+    }
     console.log(result);
     response.render(__dirname + "/views/detaliielev.ejs", { elev: result });
   });
 }
 
+function stergeElev(res, id) {
+  let sql = `DELETE FROM elevi WHERE id_elev=${id}`;
+  let query = db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+  });
+}
+
 //Pagina principala
 function search(response) {
-  // console.log(response);
   response.render(__dirname + "/views/index.ejs");
 }
 app.get("/", (req, res) => {
-  // console.log(req.body);
   search(res);
   console.log("Done. Displayed data! ");
 });
 
 //Pagina clasei cautate
 app.get("/fetch", (req, res) => {
+  var sterge_id = req.query.sterge_id;
   var clasa = req.query.clasa;
   var nume_nou = req.query.nume_nou;
   var prenume_nou = req.query.prenume_nou;
+  console.log("Elevul sters: " + sterge_id);
   console.log("Clasa cautata este: " + clasa);
   console.log("Elevul adaugat este: " + nume_nou + " " + prenume_nou);
   if (!(typeof nume_nou === "undefined" || typeof prenume_nou === "undefined"))
@@ -268,10 +299,24 @@ app.get("/fetch", (req, res) => {
   console.log("Displayed clasa");
 });
 
+//Sterge elev
+app.get("/remove/:id/:clasa", (req, res) => {
+  console.log(
+    "A fost selectat elevul: " + req.params.id + " " + req.params.clasa
+  );
+  stergeElev(res, req.params.id);
+  fetchClasa(res, req.params.clasa);
+  res.redirect(`/fetch?clasa=${req.params.clasa}`);
+});
+
 //Fisa elevului
 app.get("/detaliielev/:id", (req, res) => {
   let id = req.params.id;
+  let materia = req.query.titlu_curs;
+  let nota = req.query.valoare;
+  console.log(id + " " + materia + " " + nota);
   console.log("A fost selectat elevul cu id:" + id);
+  if (materia != null) insereazaNote(id, materia, nota);
   fetchNote(res, id);
 });
 

@@ -24,6 +24,10 @@
       integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
       crossorigin="anonymous"
     ></script>
+    <script
+      src="https://kit.fontawesome.com/0d9365b070.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body class="bg-dark">
@@ -40,35 +44,82 @@
     </form>
 
     <div class="container-fluid w-75">
-      <table class="table table-dark table-hover mt-5">
-        <thead>
-          <tr class="table-info row">
-            <th class="fs-6 col-3" scope="col">
-              Nr_Matricol: <%= elev[0].id_elev %>
-            </th>
-            <th class="fs-5 col-3" scope="col">Nume: <%= elev[0].nume %></th>
-            <th class="fs-5 col-3" scope="col">
-              Prenume: <%= elev[0].prenume %>
-            </th>
-            <th class="fs-5 col-3" scope="col">Media: <%= %></th>
-          </tr>
-        </thead>
+      <form action="">
+        <table class="table table-dark table-hover mt-5">
+          <thead>
+            <tr class="table-info row">
+              <th class="fs-5 col-3" scope="col">
+                Nr_Matricol: <%= elev[0].id_elev %>
+              </th>
+              <th class="fs-5 col-3" scope="col">Nume: <%= elev[0].nume %></th>
+              <th class="fs-5 col-3" scope="col">
+                Prenume: <%= elev[0].prenume %>
+              </th>
+              <% var media = 0; var j=0; for(j in elev){ media=media+Number(elev[j].valoare);
+              j++; }  media/=j;%>
+              <th class="fs-5 col-3" scope="col">Media: <%= media %></th>
+            </tr>
+          </thead>
 
-        <tbody>
-          <tr class="row">
-            <th class="col-4">Materia</th>
-            <th class="col-4">Valoare</th>
-            <th class="col-4">Data Notare</th>
-          </tr>
-          <% for(let i in elev) {%>
-          <tr class="row">
-            <td class="col-4"><%= elev[i].titlu_curs %></td>
-            <td class="col-4"><%= elev[i].valoare %></td>
-          </tr>
+          <tbody>
+            <tr class="row">
+              <th class="col-4">Materia</th>
+              <th class="col-4">Valoare</th>
+              <th class="col-4">Data Notare</th>
+            </tr>
+            <% for(let i in elev) {%>
+            <tr class="row">
+              <td class="col-4"><%= elev[i].titlu_curs; %></td>
+              <td class="col-4"><%= elev[i].valoare; %></td>
+              <td class="col-4">
+                <%= String(elev[i].data_notare).substr(0, 15); %>
+              </td>
+            </tr>
 
-          <% ++i; } %>
-        </tbody>
-      </table>
+            <% ++i; } %>
+
+            <tr class="row">
+              <td class="col-4">
+                <input
+                  type="hidden"
+                  name="clasa"
+                  value="<%= elev[0].id_elev %> "
+                />
+                <input
+                  class="form-control"
+                  type="text"
+                  name="titlu_curs"
+                  placeholder="Materia"
+                />
+              </td>
+              <td class="col-4">
+                <input
+                  class="form-control"
+                  type="text"
+                  name="valoare"
+                  placeholder="Nota"
+                />
+              </td>
+              <td class="col-3">
+                <!-- <input
+                  class="form-control"
+                  type="text"
+                  name="data_notare"
+                  placeholder="Data Notare"
+                /> -->
+              </td>
+
+              <td class="col-1 text-center">
+                <button type="submit" class="btn">
+                  <a href=""
+                    ><i class="fs-4 fas fa-plus-circle text-white"></i
+                  ></a>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
     </div>
   </body>
 </html>
