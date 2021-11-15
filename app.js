@@ -1,7 +1,6 @@
 const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
-const { Router } = require("express");
 const route = express.Router();
 
 //Create connection
@@ -24,65 +23,73 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(express.json);
 
 //Create db
-app.get("/createdb", (req, res) => {
+function createDB() {
   let sql = "CREATE DATABASE IF NOT EXISTS liceu";
   db.query(sql, (err, result) => {
     if (err) throw err;
     console.log(result);
-    res.send("Database created");
+    // res.send("Database created");
   });
-});
+}
 
 // Create table elevi
 function creareElevi() {
-  app.get("/createelevi", (req, res) => {
-    let sql =
-      "CREATE TABLE elevi (id_elev INT NOT NULL AUTO_INCREMENT, nume VARCHAR(10), prenume VARCHAR(10), clasa CHAR(3), PRIMARY KEY (id_elev))";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send("Table elevi created");
-    });
+  let sql =
+    "CREATE TABLE IF NOT EXISTS elevi (id_elev INT NOT NULL AUTO_INCREMENT, nume VARCHAR(10), prenume VARCHAR(10), clasa CHAR(3), PRIMARY KEY (id_elev))";
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    // res.send("Table elevi created");
   });
 }
 
 // Create table profesori
 function creareProfesori() {
-  app.get("/createprofesori", (req, res) => {
-    let sql =
-      "CREATE TABLE IF NOT EXISTS profesori (id_profesor INT NOT NULL, nume_p VARCHAR(10), prenume_p VARCHAR(10), clasa_diriginte CHAR(3), id_materie INT, PRIMARY KEY (id_profesor))";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send("Table profesori created");
-    });
+  let sql =
+    "CREATE TABLE IF NOT EXISTS profesori (id_profesor INT NOT NULL, nume_p VARCHAR(10), prenume_p VARCHAR(10), clasa_diriginte CHAR(3), id_materie INT, PRIMARY KEY (id_profesor))";
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    // res.send("Table profesori created");
   });
 }
 
 // Create table note
 function creareNote() {
-  app.get("/createnote", (req, res) => {
-    let sql =
-      "CREATE TABLE IF NOT EXISTS note (id_elev INT NOT NULL, id_curs INT NOT NULL, valoare INT, PRIMARY KEY (id_elev))";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send("Table note created");
-    });
+  let sql =
+    "CREATE TABLE IF NOT EXISTS note (id_elev INT NOT NULL, id_curs INT NOT NULL, valoare INT, PRIMARY KEY (id_elev))";
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    // res.send("Table note created");
   });
 }
 
 // Create table clase
 function creareClase() {
-  app.get("/createclase", (req, res) => {
-    let sql =
-      "CREATE TABLE IF NOT EXISTS clase (clasa CHAR(3) , id_profesor INT NOT NULL)";
-    db.query(sql, (err, result) => {
-      if (err) throw err;
-      console.log(result);
-      res.send("Table clase created");
-    });
+  let sql =
+    "CREATE TABLE IF NOT EXISTS clase (clasa CHAR(3) , id_profesor INT NOT NULL)";
+  db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    // res.send("Table clase created");
   });
+}
+
+function populateClase() {
+  var letters = "ABCDE";
+  let id_prof = 1;
+  for (let i = 9; i < 13; ++i)
+    for (let j = 0; j < 5; ++j) {
+      let clasa = String(String(i) + letters[j]);
+      let sql = `INSERT IGNORE INTO clase (clasa, id_profesor) VALUES ("${clasa}", ${id_prof})`;
+      db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log("Random insert was made");
+        console.log(result);
+      });
+      id_prof++;
+    }
 }
 
 //Functie de inserare in clase
@@ -92,7 +99,7 @@ function insereazaInClasa() {
     db.query(sql, (err, result) => {
       if (err) throw err;
       console.log(result);
-      res.send("Insert made");
+      // res.send("Insert made");
     });
   });
 }
@@ -103,7 +110,7 @@ function deleteClasa() {
     db.query(sql, (err, result) => {
       if (err) throw err;
       console.log(result);
-      res.send("Table updated");
+      // res.send("Table updated");
     });
   });
 }
@@ -115,7 +122,7 @@ function insereazaElevi() {
       if (err) throw err;
       counter_id++;
       console.log(result);
-      res.send("Insert made");
+      // res.send("Insert made");
     });
   });
 }
@@ -128,7 +135,7 @@ function insereazaProfesori() {
       db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);
-        res.send("Insert made");
+        // res.send("Insert made");
       });
     }
   );
@@ -175,25 +182,15 @@ function randomElevi() {
       elev[i].p = prenume[Math.floor(Math.random() * 10)];
       console.log(elev);
 
-      let sql = `INSERT INTO elevi (id_elev, nume, prenume, clasa) VALUES ("${elev[i].id}", "${elev[i].n}", "${elev[i].p}", "${req.params.clasa}")`;
+      let sql = `INSERT IGNORE INTO elevi (id_elev, nume, prenume, clasa) VALUES ("${elev[i].id}", "${elev[i].n}", "${elev[i].p}", "${req.params.clasa}")`;
       db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);
       });
     }
-    res.send("Insert made");
+    // res.send("Insert made");
   });
 }
-
-creareElevi();
-creareProfesori();
-creareClase();
-creareNote();
-deleteClasa();
-insereazaInClasa();
-insereazaElevi();
-insereazaProfesori();
-randomElevi();
 
 function insereazaElev(clasa, nume, prenume) {
   let sql = `INSERT INTO elevi (nume, prenume, clasa) VALUES ("${nume}", "${prenume}", "${clasa}")`;
@@ -209,43 +206,27 @@ function insereazaNote(id_elev, materia, valoare) {
   let sql_id = `SELECT * FROM cursuri WHERE titlu_curs="${materia}"`;
   db.query(sql_id, (err, result2) => {
     if (err) throw err;
-    console.log("Id gasit: " + result2[0].id_curs);
+    console.log(result2);
+    if (Object.keys(result2).length == 0) return 0;
     let sql = `INSERT INTO note (id_elev, id_curs, valoare) VALUES ("${id_elev}", "${result2[0].id_curs}", "${valoare}")`;
     db.query(sql, (err, result) => {
       if (err) throw err;
       console.log(result);
       console.log("Nota inserata");
+      return 1;
     });
-  });
-}
-
-function fetchData(response, clasa) {
-  let sql = "SELECT * FROM elevi e JOIN clase c ON e.clasa=c.clasa";
-  let query = db.query(sql, (err, result) => {
-    console.log(result);
-    response.write("<table><tr>");
-    for (var column in result[0]) {
-      response.write("<td><lable>" + column + "</lable></td>");
-      response.write("</tr>");
-    }
-    for (var row in result) {
-      response.write("</tr>");
-      for (var column in result[row]) {
-        response.write("<td><lable>" + result[row][column] + "</lable></td>");
-      }
-      response.write("</tr>");
-    }
-    response.end("</table>");
   });
 }
 
 //Trimite clasele
 function fetchClasa(response, clasa) {
+  let ok = 0;
   let sql = `SELECT * FROM elevi e JOIN clase c ON e.clasa=c.clasa JOIN profesori p ON c.id_profesor=p.id_profesor WHERE e.clasa="${clasa}"`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
     console.log(result);
-    response.render(__dirname + "/views/clasa.ejs", { arr: result });
+    if (Object.keys(result).length == 0) response.redirect("/");
+    else response.render(__dirname + "/views/clasa.ejs", { arr: result });
   });
 }
 
@@ -262,7 +243,7 @@ function fetchNote(response, id) {
         },
       ];
     }
-    console.log(result);
+    // console.log(result);
     response.render(__dirname + "/views/detaliielev.ejs", { elev: result });
   });
 }
@@ -275,11 +256,20 @@ function stergeElev(res, id) {
   });
 }
 
+//Routes:
+
 //Pagina principala
 function search(response) {
   response.render(__dirname + "/views/index.ejs");
 }
 app.get("/", (req, res) => {
+  createDB();
+  creareElevi();
+  creareProfesori();
+  creareClase();
+  creareNote();
+  populateClase();
+
   search(res);
   console.log("Done. Displayed data! ");
 });
@@ -316,7 +306,11 @@ app.get("/detaliielev/:id", (req, res) => {
   let nota = req.query.valoare;
   console.log(id + " " + materia + " " + nota);
   console.log("A fost selectat elevul cu id:" + id);
-  if (materia != null) insereazaNote(id, materia, nota);
+  if (materia != null) {
+    if (insereazaNote(id, materia, nota) == 0)
+      res.redirect(`/detaliielev/${id}`);
+    else res.redirect(`/detaliielev/${id}`);
+  }
   fetchNote(res, id);
 });
 
@@ -324,4 +318,8 @@ app.listen("3000", () => {
   console.log("Server running on port 3000!");
 });
 
-module.exports = route;
+deleteClasa();
+insereazaInClasa();
+insereazaElevi();
+insereazaProfesori();
+randomElevi();

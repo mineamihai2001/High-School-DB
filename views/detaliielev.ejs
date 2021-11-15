@@ -48,16 +48,16 @@
         <table class="table table-dark table-hover mt-5">
           <thead>
             <tr class="table-info row">
-              <th class="fs-5 col-3" scope="col">
+              <th class="fs-6 col-3" scope="col">
                 Nr_Matricol: <%= elev[0].id_elev %>
               </th>
-              <th class="fs-5 col-3" scope="col">Nume: <%= elev[0].nume %></th>
-              <th class="fs-5 col-3" scope="col">
+              <th class="fs-6 col-3" scope="col">Nume: <%= elev[0].nume %></th>
+              <th class="fs-6 col-3" scope="col">
                 Prenume: <%= elev[0].prenume %>
               </th>
               <% var media = 0; var j=0; for(j in elev){ media=media+Number(elev[j].valoare);
               j++; }  media/=j;%>
-              <th class="fs-5 col-3" scope="col">Media: <%= media %></th>
+              <th class="fs-6 col-3" scope="col">Media: <%= media %></th>
             </tr>
           </thead>
 
